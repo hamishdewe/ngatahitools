@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ngātahi Tools</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <style>
+        @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css");
+    </style>
+    <link href="./styles.css" rel="stylesheet" />
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <main>
+        <div class="px-4 py-5 text-center">
+            <h1 class="display-5 fw-bold">Ngātahi Tools</h1>
+            <div class="col-lg-6 mx-auto">
+                <p class="lead mb-4">Select a tool below.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <button hidden type="button" hx-on="click: tools.selectTool('tool-oauthconfiguration')" class="btn btn-warning btn-lg px-4"><i class="bi bi-exclamation-diamond"></i> OAuth Config</button>
+                    <button 
+                        id="btn-imsmanifest" 
+                        hx-on="click: tools.selectTool('tool-imsmanifest')"
+                        type="button" class="btn btn-primary btn-lg px-4 gap-3">
+                        <i class="bi bi-filetype-xml"></i>
+                        Imsmanifest</button>
+                    <button 
+                        id="btn-itemconnector" 
+                        hx-on="click: tools.selectTool('tool-itemconnector')"
+                        type="button" class="btn btn-secondary btn-lg px-4">
+                        <i class="bi bi-cloud-plus"></i>
+                        Item connector</button>
+                    <button hidden type="button" class="btn btn-success btn-lg px-4">_</button>
+                    <button hidden type="button" class="btn btn-danger btn-lg px-4">_</button>
+                    <button hidden type="button" class="btn btn-info btn-lg px-4">_</button>
+                    <button hidden type="button" class="btn btn-dark btn-lg px-4">_</button>
+                </div>
+            </div>
+        </div>
+        <!-- IMSMANIFEST -->
+        <section id="tool-imsmanifest" class="ngatahi-tool px-4">
+            <h1 class="display-5 fw-bold text-primary text-center"><i class="bi bi-filetype-xml"></i>Imsmanifest</h1>
+            <div class="col-lg-6 mx-auto text-start">
+                <div class="">
+                    <p>Uploading packages to Ngātahi Learning requires that all file paths are no longer than 255 characters. Of this limit, 80 characters are reserved for LMS internal use, leaving 125 characters for the <i>path</i> + <i>filename</i> + <i>extension</i>. Taking into account the nested folders for attached Rise assets, it is best to limit the <i>filename</i> + <i>extension</i> to 25 characters.</p> 
+                    <p>
+                    SCORM 2004 packages may also have the Continue/Exit/Quit buttons suppressed. If your imsmanifest is using the appropriate schema, a button to apply these changes will appear once you paste in the content and move out of the input box. Click 'Suppress SCORM 2004 buttons' to apply the changes to the imsmanifest. Use the tool linked below to validate and format the resulting xml.
+                    </p>
+                    <p><h4>References</h4>
+                        <a href='https://userapps.support.sap.com/sap/support/knowledge/en/2187183#:~:text=Globalscape%20File%20Naming%20Standard&text=The%20maximum%20length%20for%20the%20file%20path%2Bname%20is%20255%20characters.' target='_blank'>SAP Docs: FTP Server file path length limits</a><br>
+                        <a href='https://me.sap.com/notes/2188058' target='_blank'>SAP Docs: Wrapper with additional buttons for SCORM 2004 content</a><br>
+                        <a href='https://jsonformatter.org/xml-editor' target='_blank'>Tool: XML Validator and Formatter</a><br>
+                    </p>
+                </div>
+                <div>
+                    <div>
+                        <textarea id='imsmanifest-ims' class="w-100" style="min-height: 10rem" placeholder='Paste imsmanifest.xml text' hx-on='paste: setTimeout(function() {tools.imsmanifest.check2004();}, 100);' hx-on='change: tools.imsmanifest.check2004()'></textarea>
+                    </div>
+                    <button id='imsmanifest-submit' hx-on='click: tools.imsmanifest.parseManifest()'>Check file path lengths</button>
+                    <button id='imsmanifest-navigation' class='hidden' hx-on='click: tools.imsmanifest.suppress2004NavigationButtons()'> Suppress SCORM 2004 buttons</button>
+                <div id='imsmanifest-output'></div>
+            </div>
+        </section>
+        <!-- ITEM CONNECTOR -->
+        <section id="tool-itemconnector" hidden class="ngatahi-tool px-4">
+            <h1 class="display-5 fw-bold text-secondary text-center"><i class="bi bi-cloud-plus"></i> Item Connector</h1>
+            <div class="col-lg-12 mx-auto text-start">
+                <div id="section-frontmatter">
+                    <div>Check the <a href="https://help.sap.com/docs/SAP_SUCCESSFACTORS_LEARNING/360d9b368c7b41c3aede8505d0f3bd56/d9a4d1a47cdf454cbbcaedcee1fc46a9.html?locale=en-US&q=connector%20user%20guide">SAP Documentation</a> for a detailed description of all available fields.<br>
+                        CUST_* fields are custom fields and are not included in the documentation.
+                    </div>
+                </div>
+                <div id="section-dataentry">
+                    <h2 class="mt-3">Data Entry</h2>
+                    <div>
+                        Pre-populate default values using the Model selector, and click 'Add Rows' when done.<br>
+                        All valid rows will be appended to the output panel below.<br>
+                        After processing, row data will be cleared ready to add another set of rows.<br>
+                        Any rows with missing required values will generate an error and will not be added to the output panel.<br>
+                        Once all data is added, click the Export button to download the populated item_data_civilaviatstage.txt file.<br>
+                        Note that some characters in the input will be URI encoded in the output. '&' will become '<code>&amp;amp;</code>' and must be manually changed in the output.<br><br>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="table-dataentry" class="table table-striped-columns">
+                            <tr id="table-header">
+                                <th class="model">Field<br><span class="table-subhead">Field name for output</span></th>
+                                <th class="model">Description<br><span class="table-subhead">What this field is <form action=""></form></span></th>
+                                <th class="model">Model<br><span class="table-subhead">Change this row to set defaults for all other rows</span></th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div id="section-ouput">
+                    <h2 class="mt-3">Data Output</h2>
+                    <div>
+                        Copy and paste this data into a new, appropriately named, text file.
+                        <ul>
+                            <li>Staging: item_data_civilaviatstage.txt</li>
+                            <li>Production: item_data_civilaviat.txt</li>
+                        </ul>
+                    </div>
+                    <div id="output" contenteditable="true"></div>
+                    <div>
+                        <button class="btn btn-success my-3" hx-on="click: tools.itemconnector.download()"><i class="bi bi-box-arrow-down"></i> Export</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- OAUTH CONFIG -->
+        <section id="tool-oauthconfiguration" hidden class="ngatahi-tool px-4">
+            <h1 class="display-5 fw-bold text-warning text-center"><i class="bi bi-exclamation-diamond"></i> OAuth Configuration</h1>
+            <div class="col-lg-6 mx-auto text-start">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="oauthconfiguration-platform" placeholder="Platform">
+                    <label for="oauthconfiguration-platform">Platform</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="oauthconfiguration-companyId" placeholder="Company ID">
+                    <label for="oauthconfiguration-companyId">Company ID</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="oauthconfiguration-clientId" placeholder="Client ID">
+                    <label for="oauthconfiguration-clientId">Client ID</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="oauthconfiguration-clientSecret" placeholder="Client Secret">
+                    <label for="oauthconfiguration-clientSecret">Client Secret</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="oauthconfiguration-clientSecretHash" placeholder="Client Secret Hash Value">
+                    <label for="oauthconfiguration-clientSecretHash">Client Secret Hash Value</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="textarea" class="form-control" id="oauthconfiguration-publicKey" placeholder="Public Key">
+                    <label for="oauthconfiguration-publicKey">Public Key</label>
+                </div>
+                <div>
+                    <button class="btn btn-success" hx-on="click: tools.oauthconfiguration.load()">Load from local storage</button>
+                    <button class="btn btn-warning" hx-on="click: tools.oauthconfiguration.save()">Save to local storage</button>
+                    <button class="btn btn-secondary" 
+                        hx-on="click: htmx.ajax('POST', 'https://' + tools.oauthconfiguration.platform.value + '/learning/oauth-api/rest/v1/token'), '#token'">
+                        Get OAuth token</button>
+                    <div id="token"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="./scripts/init.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        tools.itemconnector.build();
+    </script>
+  </body>
+</html>

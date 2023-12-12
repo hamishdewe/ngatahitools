@@ -1,0 +1,15 @@
+input[required]:invalid {
+    border: 1px solid red;
+}
+
+.table-subhead {
+    font-style: italic;
+    font-weight: normal;
+}
+
+#output {
+    border: 1px solid lightgrey;
+    padding: 1rem;
+    text-wrap: nowrap;
+    overflow: scroll;
+}
