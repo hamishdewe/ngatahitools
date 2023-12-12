@@ -59,8 +59,8 @@
                     <div>
                         <textarea id='imsmanifest-ims' class="w-100" style="min-height: 10rem" placeholder='Paste imsmanifest.xml text' hx-on='paste: setTimeout(function() {tools.imsmanifest.check2004();}, 100);' hx-on='change: tools.imsmanifest.check2004()'></textarea>
                     </div>
-                    <button id='imsmanifest-submit' hx-on='click: tools.imsmanifest.parseManifest()'>Check file path lengths</button>
-                    <button id='imsmanifest-navigation' class='hidden' hx-on='click: tools.imsmanifest.suppress2004NavigationButtons()'> Suppress SCORM 2004 buttons</button>
+                    <button class="btn btn-primary" id='imsmanifest-submit' hx-on='click: tools.imsmanifest.parseManifest()'>Check file path lengths</button>
+                    <button class="btn btn-success" id='imsmanifest-navigation' class='hidden' hx-on='click: tools.imsmanifest.suppress2004NavigationButtons()'> Suppress SCORM 2004 buttons</button>
                 <div id='imsmanifest-output'></div>
             </div>
         </section>
