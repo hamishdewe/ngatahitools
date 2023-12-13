@@ -768,6 +768,7 @@ const tools = {
             var code = `${project.value}${projectnumber.value.padStart(3, '0')}_${entity.value}${entitynumber.value.padStart(2, '0')}${revision.value > 0 ? '.' + revision.value.padStart(2, '0') : ""}`;
             var entitytype = 'item';
             var filter = (row) => { return row.id === code };
+            var validateProjectOnly = false;
             switch (entity.value) {
                 case "ELN":
                 case "INC":
@@ -793,22 +794,42 @@ const tools = {
                     // entitytype = 'curriculum';
                     // filter = (row) => { return row.requirementid === code };
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "COL": {
                     // entitytype = 'collection';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "ELK": {
                     // entitytype = 'externallink';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "LIB": {
                     // entitytype = 'library';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "GRP": {
                     // entitytype = 'classgroup';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "DOC":
                 case "AIC":
@@ -827,10 +848,18 @@ const tools = {
                 case "QUE": {
                     // entitytype = 'question';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "OBJ": {
                     // entitytype = 'objective';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "TSK": {
                     entitytype = 'task';
@@ -839,6 +868,10 @@ const tools = {
                 case "SUR": {
                     // entitytype = 'survey';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "DLK": {
                     entitytype = 'documentlink';
@@ -847,10 +880,18 @@ const tools = {
                 case "UGP": {
                     // entitytype = 'usergroup';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 case "COH": {
                     // entitytype = 'cohort';
                     // break;
+                    entitytype = 'item';
+                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+                    validateProjectOnly = true;
+                    break;
                 }
                 default: {
                     break;
@@ -860,7 +901,11 @@ const tools = {
                 if (available) {
                         container.innerHTML = `<div class="alert alert-success">Your generated id is <br><code>${code}</code></div>`
                     } else {
-                        container.innerHTML = `<div class="alert alert-danger">ID <code>${code}</code> is in use.</div>`;
+                        if (validateProjectOnly) {
+                            container.innerHTML = `<div class="alert alert-warning">Project code <code>${code.substring(0,6)}</code> may be in use.</div>`;
+                        } else {
+                            container.innerHTML = `<div class="alert alert-danger">ID <code>${code}</code> is in use.</div>`;
+                        }
                     }
                 }
             )
