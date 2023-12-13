@@ -131,9 +131,7 @@ const tools = {
             tools.oauthconfiguration.clientSecretHash.value = config.clientSecretHash;
             tools.oauthconfiguration.publicKey.value = config.publicKey;
         },
-        getToken: () => {
-
-        }
+        getToken: () => { }
 
     },
     itemconnector: {
@@ -731,6 +729,75 @@ const tools = {
             let ims = document.getElementById('imsmanifest-ims');
             ims.value = new XMLSerializer().serializeToString(xmlDoc);
           }
+    },
+    entityid: {
+        process: () => {
+            const container = document.getElementById('entityid-result');
+            const project = document.getElementById('entityid-project');
+            const projectnumber = document.getElementById('entityid-projectnumber');
+            const entity = document.getElementById('entityid-entity');
+            const entitynumber = document.getElementById('entityid-entitynumber');
+            const revision = document.getElementById('entityid-entityrevision');
+
+            switch (entity.value) {
+                case "DOC":
+                case "AIC":
+                case "SCO": {
+                    revision.removeAttribute('disabled');
+                    console.log('Is content object');
+                    break;
+                }
+                default: {
+                    revision.setAttribute('disabled', 'disabled');
+                    break;
+                }
+            }
+
+            // Return early
+            if (
+                !project.validity.valid ||
+                !projectnumber.validity.valid ||
+                !entity.validity.valid ||
+                !entitynumber.validity.valid 
+            ) {
+                container.innerHTML = "";
+                return false;
+            }
+
+            // Process
+            var code = `${project.value}${projectnumber.value.padStart(3, '0')}_${entity.value}${entitynumber.value.padStart(2, '0')}${revision.value > 0 ? '.' + revision.value.padStart(2, '0') : ""}`;
+            var entitytype = 'item';
+            switch (entity.value) {
+                case "ELN":
+                case "INC":
+                case "BLN":
+                case "OJT":
+                case "EXT": {
+                    entitytype = 'item';
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            tools.entityid.availableId(entitytype, code, (available) => { 
+                if (available) {
+                        container.innerHTML = `<div class="alert alert-success">Your generated id is <br><code>${code}</code></div>`
+                    } else {
+                        container.innerHTML = `<div class="alert alert-danger">ID <code>${code}</code> is in use.</div>`;
+                    }
+                }
+            )
+        },
+        availableId: (entity, id, callback) => {
+            Papa.parse(`./data/${entity}.csv`, {
+                header: true,
+                download: true,
+                complete: function(results) {
+                    callback(!results.data.some((row) => row.id === id ));
+                }
+            });
+        }
     }
 
 }

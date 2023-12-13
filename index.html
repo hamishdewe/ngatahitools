@@ -12,6 +12,8 @@
     <link href="./styles.css" rel="stylesheet" />
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+    <!-- Papa Parse for CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   </head>
   <body>
     <main>
@@ -26,14 +28,17 @@
                         hx-on="click: tools.selectTool('tool-imsmanifest')"
                         type="button" class="btn btn-primary btn-lg px-4 gap-3">
                         <i class="bi bi-filetype-xml"></i>
-                        Imsmanifest</button>
+                        SCORM IMS Manifest</button>
                     <button 
                         id="btn-itemconnector" 
                         hx-on="click: tools.selectTool('tool-itemconnector')"
                         type="button" class="btn btn-secondary btn-lg px-4">
                         <i class="bi bi-cloud-plus"></i>
-                        Item connector</button>
-                    <button hidden type="button" class="btn btn-success btn-lg px-4">_</button>
+                        Item Connector</button>
+                    <button 
+                        id="btn-imsmanifest" 
+                        hx-on="click: tools.selectTool('tool-entityid')" 
+                        type="button" class="btn btn-success btn-lg px-4"><i class="bi bi-magic"></i> Entity ID Creator</button>
                     <button hidden type="button" class="btn btn-danger btn-lg px-4">_</button>
                     <button hidden type="button" class="btn btn-info btn-lg px-4">_</button>
                     <button hidden type="button" class="btn btn-dark btn-lg px-4">_</button>
@@ -42,7 +47,7 @@
         </div>
         <!-- IMSMANIFEST -->
         <section id="tool-imsmanifest" class="ngatahi-tool px-4">
-            <h1 class="display-5 fw-bold text-primary text-center"><i class="bi bi-filetype-xml"></i>Imsmanifest</h1>
+            <h1 class="display-5 fw-bold text-primary text-center"><i class="bi bi-filetype-xml"></i>SCORM IMS Manifest</h1>
             <div class="col-lg-6 mx-auto text-start">
                 <div class="">
                     <p>Uploading packages to Ngātahi Learning requires that all file paths are no longer than 255 characters. Of this limit, 80 characters are reserved for LMS internal use, leaving 125 characters for the <i>path</i> + <i>filename</i> + <i>extension</i>. Taking into account the nested folders for attached Rise assets, it is best to limit the <i>filename</i> + <i>extension</i> to 25 characters.</p> 
@@ -141,10 +146,73 @@
                     <button class="btn btn-success" hx-on="click: tools.oauthconfiguration.load()">Load from local storage</button>
                     <button class="btn btn-warning" hx-on="click: tools.oauthconfiguration.save()">Save to local storage</button>
                     <button class="btn btn-secondary" 
-                        hx-on="click: htmx.ajax('POST', 'https://' + tools.oauthconfiguration.platform.value + '/learning/oauth-api/rest/v1/token'), '#token'">
+                        hx-on="click: tools.oauthconfiguration.getToken()">
                         Get OAuth token</button>
                     <div id="token"></div>
                 </div>
+            </div>
+        </section>
+        <!-- ENTITY ID -->
+        <section id="tool-entityid" hidden class="ngatahi-tool px-4">
+            <h1 class="display-5 fw-bold text-success text-center"><i class="bi bi-magic"></i> Entity ID Creator</h1>
+            <div class="col-lg-6 mx-auto text-start">
+                <div class="form-floating mb-3">
+                    <input hx-on="change: tools.entityid.process()" minlength="3" maxlength="3" pattern="[A-Z]{3}" required type="text" class="form-control" id="entityid-project" placeholder="Project Code: three capital letters">
+                    <label for="entityid-project">Project Code: three capital letters</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input hx-on="change: tools.entityid.process()" min="1" max="999" required type="number" class="form-control" id="entityid-projectnumber" placeholder="Project Number">
+                    <label for="entityid-projectnumber">Project Number: 1-999</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <select hx-on="change: tools.entityid.process()" required class="form-control" id="entityid-entity" placeholder="Entity Type">
+                        <option value="">Select an entity type</option>
+                        <optgroup label="Activities">
+                            <option value="ELN">Item - Online</option>
+                            <option value="INC">Item - Instructor-led (In-class)</option>
+                            <option value="BLN">Item - Blended</option>
+                            <option value="OJT">Item - On the Job Training</option>
+                            <option value="EXT">Item - External</option>
+                            <option value="PRS">Program - Scheduled</option>
+                            <option value="PRD">Program - Duration</option>
+                            <option value="PRO">Program - Open-ended</option>
+                            <option value="CUR">Curriculum</option>
+                            <option value="CRH">Curriculum Requirements - Hours of Type</option>
+                            <option value="CRP">Curriculum Requirements - Hours from Pool</option>
+                            <option value="CRI">Curriculum Requirements - Items from Pool</option>
+                            <option value="COL">Collection</option>
+                            <option value="ELK">External Link</option>
+                            <option value="LIB">Library</option>
+                            <option value="GRP">Class Group</option>
+                        </optgroup>
+                        <optgroup label="Content">
+                            <option value="DOC">Content Object - Document Type</option>
+                            <option value="AIC">Content Object - AICC</option>
+                            <option value="SCO">Content Object - SCORM</option>
+                            <option value="EXM">Assessment - Exam</option>
+                            <option value="QUI">Assessment - Quiz</option>
+                            <option value="QUE">Question</option>
+                            <option value="OBJ">Objective</option>
+                            <option value="TSK">Task</option>
+                            <option value="SUR">Survey</option>
+                            <option value="DLK">Document Link</option>
+                        </optgroup>
+                        <optgroup label="People">
+                            <option value="UGP">User Group</option>
+                            <option value="COH">Cohort</option>
+                        </optgroup>
+                    </select>
+                    <label for="entityid-entity">Entity Type</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input hx-on="change: tools.entityid.process()" min="1" max="999" required type="number" class="form-control" id="entityid-entitynumber" placeholder="Project Number">
+                    <label for="entityid-entitynumber">Entity Number: 1-999</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input disabled hx-on="change: tools.entityid.process()" min="1" max="99" type="number" class="form-control" id="entityid-entityrevision" placeholder="Revision Number">
+                    <label for="entityid-entityrevision">Content Object Revision Number: 1-99</label>
+                </div>
+                <div id="entityid-result"></div>
             </div>
         </section>
     </main>

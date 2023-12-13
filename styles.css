@@ -1,5 +1,19 @@
-input[required]:invalid {
+input[required]:invalid,
+select[required]:invalid {
     border: 1px solid red;
+}
+
+select[required]:invalid {
+    font-style: italic;
+}
+select[required] option {
+    font-style: normal;
+}
+select[required] option[value=""] {
+    font-style: italic;
+}
+select[required] optgroup {
+    font-style: normal;
 }
 
 .table-subhead {
