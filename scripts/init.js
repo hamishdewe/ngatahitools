@@ -767,7 +767,8 @@ const tools = {
             // Process
             var code = `${project.value}${projectnumber.value.padStart(3, '0')}_${entity.value}${entitynumber.value.padStart(2, '0')}${revision.value > 0 ? '.' + revision.value.padStart(2, '0') : ""}`;
             var entitytype = 'item';
-            var filter = (row) => { return row.id === code };
+            var projectfilter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
+            var idfilter = (row) => { return row.id === code };
             var validateProjectOnly = false;
             switch (entity.value) {
                 case "ELN":
@@ -793,42 +794,22 @@ const tools = {
                 case "CRI": {
                     // entitytype = 'curriculum';
                     // filter = (row) => { return row.requirementid === code };
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "COL": {
                     // entitytype = 'collection';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "ELK": {
                     // entitytype = 'externallink';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "LIB": {
                     // entitytype = 'library';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "GRP": {
                     // entitytype = 'classgroup';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "DOC":
@@ -847,18 +828,10 @@ const tools = {
                 }
                 case "QUE": {
                     // entitytype = 'question';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "OBJ": {
                     // entitytype = 'objective';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "TSK": {
@@ -867,10 +840,6 @@ const tools = {
                 }
                 case "SUR": {
                     // entitytype = 'survey';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "DLK": {
@@ -879,43 +848,36 @@ const tools = {
                 }
                 case "UGP": {
                     // entitytype = 'usergroup';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 case "COH": {
                     // entitytype = 'cohort';
-                    // break;
-                    entitytype = 'item';
-                    filter = (row) => { return row.id.indexOf(code.substring(0,6)) >= 0};
-                    validateProjectOnly = true;
                     break;
                 }
                 default: {
                     break;
                 }
             }
-            tools.entityid.availableId(entitytype, filter, (available) => { 
-                if (available) {
-                        container.innerHTML = `<div class="alert alert-success">Your generated id is <br><code>${code}</code></div>`
+            tools.entityid.availableId(entitytype, projectfilter, idfilter, (project, id) => { 
+                if (project) {
+                    container.innerHTML = `<div class="alert alert-success">Project code <code>${code.substring(0,6)}</code> may not be in use.</div>`;
+                } else {
+                    container.innerHTML = `<div class="alert alert-warning">Project code <code>${code.substring(0,6)}</code> may be in use.</div>`;
+                }
+                if (id) {
+                        container.innerHTML += `<div class="alert alert-success">Your generated id is <br><code>${code}</code></div>`
                     } else {
-                        if (validateProjectOnly) {
-                            container.innerHTML = `<div class="alert alert-warning">Project code <code>${code.substring(0,6)}</code> may be in use.</div>`;
-                        } else {
-                            container.innerHTML = `<div class="alert alert-danger">ID <code>${code}</code> is in use.</div>`;
-                        }
+                        container.innerHTML += `<div class="alert alert-danger">ID <code>${code}</code> is in use.</div>`;
                     }
                 }
             )
         },
-        availableId: (entity, filter, callback) => {
+        availableId: (entity, projectfilter, idfilter, callback) => {
             Papa.parse(`./data/${entity}.csv`, {
                 header: true,
                 download: true,
                 complete: function(results) {
-                    callback(!results.data.some(filter));
+                    callback(!results.data.some(projectfilter), !results.data.some(idfilter));
                 }
             });
         }

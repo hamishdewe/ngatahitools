@@ -158,11 +158,13 @@
             <div class="col-lg-6 mx-auto text-start">
                 <div class="form-floating mb-3">
                     <input hx-on="change: tools.entityid.process()" minlength="3" maxlength="3" pattern="[A-Z]{3}" required type="text" class="form-control" id="entityid-project" placeholder="Project Code: three capital letters">
-                    <label for="entityid-project">Project Code: three capital letters</label>
+                    <label for="entityid-project">Project Code</label>
+                    <small id="entityid-projectHelp" class="form-text text-muted">Requires three capital letters.</small>
                 </div>
                 <div class="form-floating mb-3">
                     <input hx-on="change: tools.entityid.process()" min="1" max="999" required type="number" class="form-control" id="entityid-projectnumber" placeholder="Project Number">
                     <label for="entityid-projectnumber">Project Number: 1-999</label>
+                    <small id="entityid-projectnumberHelp" class="form-text text-muted">Numbers disambiguate projects with the same 3-letter code.</small>
                 </div>
                 <div class="form-floating mb-3">
                     <select hx-on="change: tools.entityid.process()" required class="form-control" id="entityid-entity" placeholder="Entity Type">
@@ -203,14 +205,17 @@
                         </optgroup>
                     </select>
                     <label for="entityid-entity">Entity Type</label>
+                    <small id="entityid-entitytHelp" class="form-text text-muted"><a href="#">Entity description</a></small>
                 </div>
                 <div class="form-floating mb-3">
                     <input hx-on="change: tools.entityid.process()" min="1" max="999" required type="number" class="form-control" id="entityid-entitynumber" placeholder="Project Number">
                     <label for="entityid-entitynumber">Entity Number: 1-999</label>
+                    <small id="entityid-entitynumbertHelp" class="form-text text-muted">Numbers disambiguate entities of the same type.</small>
                 </div>
                 <div class="form-floating mb-3">
                     <input disabled hx-on="change: tools.entityid.process()" min="1" max="99" type="number" class="form-control" id="entityid-entityrevision" placeholder="Revision Number">
                     <label for="entityid-entityrevision">Content Object Revision Number: 1-99</label>
+                    <small id="entityid-projectHelp" class="form-text text-muted">Only required for versioning of content objects.</small>
                 </div>
                 <div id="entityid-result"></div>
             </div>
