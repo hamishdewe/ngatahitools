@@ -767,6 +767,7 @@ const tools = {
             // Process
             var code = `${project.value}${projectnumber.value.padStart(3, '0')}_${entity.value}${entitynumber.value.padStart(2, '0')}${revision.value > 0 ? '.' + revision.value.padStart(2, '0') : ""}`;
             var entitytype = 'item';
+            var filter = (row) => { return row.id === code };
             switch (entity.value) {
                 case "ELN":
                 case "INC":
@@ -776,11 +777,86 @@ const tools = {
                     entitytype = 'item';
                     break;
                 }
+                case "PRS":
+                case "PRD":
+                case "PRO": {
+                    entitytype = 'program';
+                    break;
+                }
+                case "CUR": {
+                    entitytype = 'curriculum';
+                    break;
+                }
+                case "CRH":
+                case "CRP":
+                case "CRI": {
+                    // entitytype = 'curriculum';
+                    // filter = (row) => { return row.requirementid === code };
+                    // break;
+                }
+                case "COL": {
+                    // entitytype = 'collection';
+                    // break;
+                }
+                case "ELK": {
+                    // entitytype = 'externallink';
+                    // break;
+                }
+                case "LIB": {
+                    // entitytype = 'library';
+                    // break;
+                }
+                case "GRP": {
+                    // entitytype = 'classgroup';
+                    // break;
+                }
+                case "DOC":
+                case "AIC":
+                case "SCO": {
+                    entitytype = 'contentobject';
+                    break;
+                }
+                case "EXM": {
+                    entitytype = 'exam';
+                    break;
+                }
+                case "QUI": {
+                    entitytype = 'quiz';
+                    break;
+                }
+                case "QUE": {
+                    // entitytype = 'question';
+                    // break;
+                }
+                case "OBJ": {
+                    // entitytype = 'objective';
+                    // break;
+                }
+                case "TSK": {
+                    entitytype = 'task';
+                    break;
+                }
+                case "SUR": {
+                    // entitytype = 'survey';
+                    // break;
+                }
+                case "DLK": {
+                    entitytype = 'documentlink';
+                    break;
+                }
+                case "UGP": {
+                    // entitytype = 'usergroup';
+                    // break;
+                }
+                case "COH": {
+                    // entitytype = 'cohort';
+                    // break;
+                }
                 default: {
                     break;
                 }
             }
-            tools.entityid.availableId(entitytype, code, (available) => { 
+            tools.entityid.availableId(entitytype, filter, (available) => { 
                 if (available) {
                         container.innerHTML = `<div class="alert alert-success">Your generated id is <br><code>${code}</code></div>`
                     } else {
@@ -789,12 +865,12 @@ const tools = {
                 }
             )
         },
-        availableId: (entity, id, callback) => {
+        availableId: (entity, filter, callback) => {
             Papa.parse(`./data/${entity}.csv`, {
                 header: true,
                 download: true,
                 complete: function(results) {
-                    callback(!results.data.some((row) => row.id === id ));
+                    callback(!results.data.some(filter));
                 }
             });
         }
