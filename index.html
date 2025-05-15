@@ -22,7 +22,7 @@
             <div class="col-lg-6 mx-auto">
                 <p class="lead mb-4">Select a tool below.</p>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <button hidden type="button" hx-on="click: tools.selectTool('tool-oauthconfiguration')" class="btn btn-warning btn-lg px-4"><i class="bi bi-exclamation-diamond"></i> OAuth Config</button>
+                    <button type="button" hx-on="click: tools.selectTool('tool-oauthconfiguration')" class="btn btn-warning btn-lg px-4"><i class="bi bi-exclamation-diamond"></i> OAuth Config</button>
                     <button 
                         id="btn-imsmanifest" 
                         hx-on="click: tools.selectTool('tool-imsmanifest')"
@@ -131,6 +131,10 @@
                     <label for="oauthconfiguration-clientId">Client ID</label>
                 </div>
                 <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="oauthconfiguration-userId" placeholder="User ID">
+                    <label for="oauthconfiguration-clientId">User ID</label>
+                </div>
+                <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="oauthconfiguration-clientSecret" placeholder="Client Secret">
                     <label for="oauthconfiguration-clientSecret">Client Secret</label>
                 </div>
@@ -205,7 +209,7 @@
                         </optgroup>
                     </select>
                     <label for="entityid-entity">Entity Type</label>
-                    <small id="entityid-entitytHelp" class="form-text text-muted"><a href="#" data-toggle="modal" data-target="#entityid-modal">Entity description</a></small>
+                    <small id="entityid-entitytHelp" class="form-text text-muted">Entity description</small>
                 </div>
                 <div class="form-floating mb-3">
                     <input hx-on="change: tools.entityid.process()" min="1" max="999" required type="number" class="form-control" id="entityid-entitynumber" placeholder="Project Number">
@@ -219,25 +223,6 @@
                 </div>
                 <div id="entityid-result"></div>
             </div>
-            <div class="modal fade" id="entityid-modal" tabindex="-1" role="dialog">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">Entity Descriptions</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body">
-                      <p>Modal body text goes here.</p>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-primary">Save changes</button>
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
         </section>
     </main>
     <script src="./scripts/init.js"></script>

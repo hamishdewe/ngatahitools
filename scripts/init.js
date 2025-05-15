@@ -109,6 +109,7 @@ const tools = {
         platform: document.getElementById('oauthconfiguration-platform'),
         companyId: document.getElementById('oauthconfiguration-companyId'),
         clientId: document.getElementById('oauthconfiguration-clientId'),
+        userId: document.getElementById('oauthconfiguration-userId'),
         clientSecret: document.getElementById('oauthconfiguration-clientSecret'),
         clientSecretHash: document.getElementById('oauthconfiguration-clientSecretHash'),
         publicKey: document.getElementById('oauthconfiguration-publicKey'),
@@ -117,6 +118,7 @@ const tools = {
                 platform: tools.oauthconfiguration.platform.value,
                 companyId: tools.oauthconfiguration.companyId.value,
                 clientId: tools.oauthconfiguration.clientId.value,
+                userId: tools.oauthconfiguration.userId.value,
                 clientSecret: tools.oauthconfiguration.clientSecret.value,
                 clientSecretHash: tools.oauthconfiguration.clientSecretHash.value,
                 publicKey: tools.oauthconfiguration.publicKey.value,
@@ -127,11 +129,38 @@ const tools = {
             tools.oauthconfiguration.platform.value = config.platform;
             tools.oauthconfiguration.companyId.value = config.companyId;
             tools.oauthconfiguration.clientId.value = config.clientId;
+            tools.oauthconfiguration.userId.value = config.userId;
             tools.oauthconfiguration.clientSecret.value = config.clientSecret;
             tools.oauthconfiguration.clientSecretHash.value = config.clientSecretHash;
             tools.oauthconfiguration.publicKey.value = config.publicKey;
         },
-        getToken: () => { }
+        getToken: () => {
+            const url = `https://${tools.oauthconfiguration.platform.value}/learning/oauth-api/rest/v1/token`;
+            var body = JSON.stringify(
+            { "grant_type":"client_credentials",
+                "scope":{
+                "userId":tools.oauthconfiguration.userId.value,
+                "companyId":`${tools.oauthconfiguration.companyId.value}`,
+                "userType":"admin",
+                "resourceType":"learning_public_api"
+                }
+            });
+            var auth = btoa(`${tools.oauthconfiguration.clientId.value}:${tools.oauthconfiguration.clientSecret.value}`);
+            var params = {
+                method: "POST",
+                mode: 'no-cors',
+                body: body,
+                headers: {
+                    "Authorization": `Basic ${auth}`,
+                    "Content-type": "application/json",
+                    "Access-Control-Allow-Origin": "*"
+                }
+            };
+            console.log('getting token', url, params);
+            fetch(url, params)
+                .then((response) => console.log(response))
+                .then((json) => console.log(json));
+        }
 
     },
     itemconnector: {
@@ -776,17 +805,17 @@ const tools = {
                 case "BLN":
                 case "OJT":
                 case "EXT": {
-                    entitytype = 'item';
+                    entitytype = 'Item';
                     break;
                 }
                 case "PRS":
                 case "PRD":
                 case "PRO": {
-                    entitytype = 'program';
+                    entitytype = 'Programme';
                     break;
                 }
                 case "CUR": {
-                    entitytype = 'curriculum';
+                    entitytype = 'Curriculum';
                     break;
                 }
                 case "CRH":
@@ -882,6 +911,5 @@ const tools = {
             });
         }
     }
-
 }
 
